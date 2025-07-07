@@ -2,8 +2,6 @@
 
 A cute and aesthetic GUI-based Love Calculator built with Python & Tkinter — perfect for playing around with name-based compatibility, romantic vibes, and heart-floating animations. 💞
 
-![Screenshot](Screenshot.png) <!-- Replace with actual screenshot if available -->
-
 ---
 
 ## 🌟 Features
@@ -73,7 +71,7 @@ python love_calculator.py
 
 ## 📸 Screenshots
 
-![screenshot](https://your-screenshot-url-here.com) <!-- You can update this with an actual UI screenshot -->
+![screenshot](Screenshot.png) <!-- You can update this with an actual UI screenshot -->
 
 ---
 
