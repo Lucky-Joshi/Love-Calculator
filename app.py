@@ -2,10 +2,8 @@ import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 import random
-import webbrowser
-import pyautogui
-import time
 
+# ---------------------- Core Logic --------------------------
 def calculate_love():
     name1 = entry1.get().strip()
     name2 = entry2.get().strip()
@@ -14,13 +12,12 @@ def calculate_love():
         messagebox.showwarning("Input Error", "Please enter both names!")
         return
 
-    # Show "Calculating..." animation
-    result_label.config(text="Calculating", fg="white", font=("Helvetica", 16, "bold"))
+    result_label.config(text="Calculating", fg="white")
     animate_dots(0, name1, name2)
 
 def animate_dots(count, name1, name2):
     if count < 3:
-        result_label.config(text=result_label.cget("text") + " .")
+        result_label.config(text=result_label.cget("text") + ".")
         root.after(300, animate_dots, count + 1, name1, name2)
     else:
         show_love_result(name1, name2)
@@ -28,7 +25,7 @@ def animate_dots(count, name1, name2):
 def show_love_result(name1, name2):
     love_percent = random.randint(60, 100)
 
-    # Compatibility breakdown logic
+    # Compatibility logic
     vowel_count = sum([1 for ch in name1.lower() + name2.lower() if ch in 'aeiou'])
     length_diff = abs(len(name1) - len(name2))
     initial_match = name1[0].lower() == name2[0].lower()
@@ -41,7 +38,6 @@ def show_love_result(name1, name2):
     if vowel_count > 6:
         message += "🎵 Lots of vowels = good vibes!"
 
-    # Romantic message
     if love_percent > 90:
         msg = "💖 You two are soulmates! 💖"
     elif love_percent > 75:
@@ -50,63 +46,98 @@ def show_love_result(name1, name2):
         msg = "💘 There's definitely chemistry!"
 
     result_text = f"{love_percent}%\n{msg}\n\n{message.strip()}"
-    result_label.config(text=result_text, fg="#ff3366")
+    result_label.config(text=result_text, fg="#d63384")
 
-    share_button.pack(pady=5)
-    save_button.pack(pady=5)
+# ---------------------- Heart Animation ---------------------
+def float_hearts():
+    heart = tk.Label(root, text="❤️", font=("Arial", 14), bg="#fff0f5", fg="red")
+    x = random.randint(50, 450)
+    y = 600
+    heart.place(x=x, y=y)
 
-def share_on_whatsapp():
-    name1 = entry1.get().strip()
-    name2 = entry2.get().strip()
-    msg = result_label.cget("text")
-    url = f"https://api.whatsapp.com/send?text=💘 Love Calculator 💘\n{name1} ❤️ {name2}\n\n{msg}"
-    webbrowser.open(url)
+    def animate():
+        nonlocal y
+        if y > -20:
+            y -= 2
+            heart.place(x=x, y=y)
+            root.after(30, animate)
+        else:
+            heart.destroy()
 
-def save_as_image():
-    x = root.winfo_rootx()
-    y = root.winfo_rooty()
-    w = x + root.winfo_width()
-    h = y + root.winfo_height()
-    timestamp = time.strftime("%Y%m%d-%H%M%S")
-    img = pyautogui.screenshot(region=(x, y, w - x, h - y))
-    img.save(f"Love_Result_{timestamp}.png")
-    messagebox.showinfo("Saved!", f"Result saved as Love_Result_{timestamp}.png")
+    animate()
 
-# 🪄 GUI Setup
+def start_heart_rain():
+    float_hearts()
+    root.after(800, start_heart_rain)
+
+# ---------------------- GUI Setup ---------------------------
 root = tk.Tk()
 root.title("Love Calculator 💘")
 root.geometry("500x600")
 root.resizable(False, False)
 
-# 🖼️ Background
+# Background Image
 bg_image = Image.open("love_bg.jpg")
 bg_photo = ImageTk.PhotoImage(bg_image.resize((500, 600)))
 bg_label = tk.Label(root, image=bg_photo)
 bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-# 📝 Input Fields
-title = tk.Label(root, text="💘 Love Calculator 💘", font=("Helvetica", 22, "bold"), fg="white", bg="#d63384")
-title.pack(pady=30)
+# Title
+title = tk.Label(root, text="💘 Love Calculator 💘", font=("Comic Sans MS", 22, "bold"), fg="white", bg="#d63384", pady=10)
+title.pack(pady=(20, 10))
 
-entry1 = tk.Entry(root, font=("Helvetica", 16), justify='center')
-entry1.pack(pady=10)
+# Input Fields
+entry1 = tk.Entry(root, font=("Comic Sans MS", 16), justify='center', bd=0, relief='flat', bg="white")
+entry1.pack(pady=10, ipadx=10, ipady=5)
 entry1.insert(0, "Your Name")
 
-entry2 = tk.Entry(root, font=("Helvetica", 16), justify='center')
-entry2.pack(pady=10)
+entry2 = tk.Entry(root, font=("Comic Sans MS", 16), justify='center', bd=0, relief='flat', bg="white")
+entry2.pack(pady=10, ipadx=10, ipady=5)
 entry2.insert(0, "Crush's Name")
 
-# 🔘 Calculate Button
-btn = tk.Button(root, text="Calculate Love %", font=("Helvetica", 14, "bold"), bg="#ff4d6d", fg="white", command=calculate_love)
-btn.pack(pady=20)
+# Button Hover Effects
+def on_enter(e):
+    btn['bg'] = '#ff6699'
 
-# 💖 Result Display
-result_label = tk.Label(root, text="", font=("Helvetica", 16), fg="white", bg="#f06595", wraplength=400, justify='center')
-result_label.pack(pady=20)
+def on_leave(e):
+    btn['bg'] = '#ff4d6d'
 
-# 📤 Share & Save Buttons (Initially Hidden)
-share_button = tk.Button(root, text="📤 Share on WhatsApp", font=("Helvetica", 12), command=share_on_whatsapp, bg="#25D366", fg="white")
-save_button = tk.Button(root, text="📸 Save as Image", font=("Helvetica", 12), command=save_as_image, bg="#6c757d", fg="white")
+# Button
+btn = tk.Button(
+    root,
+    text="Calculate Love %",
+    font=("Comic Sans MS", 14, "bold"),
+    bg="#ff4d6d",
+    fg="white",
+    activebackground="#ff66a3",
+    padx=15,
+    pady=5,
+    bd=0,
+    command=calculate_love
+)
+btn.pack(pady=15)
+btn.bind("<Enter>", on_enter)
+btn.bind("<Leave>", on_leave)
 
-# Run
+# Result Card Frame
+result_frame = tk.Frame(root, bg="#fff0f5", bd=0)
+result_frame.pack(pady=20)
+
+result_label = tk.Label(
+    result_frame,
+    text="",
+    font=("Comic Sans MS", 16, "bold"),
+    fg="#d63384",
+    bg="#fff0f5",
+    wraplength=360,
+    justify='center',
+    padx=20,
+    pady=20
+)
+result_label.pack()
+
+# Start heart rain animation
+start_heart_rain()
+
+# Start app
 root.mainloop()
